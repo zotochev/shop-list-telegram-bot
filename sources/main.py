@@ -7,6 +7,8 @@ from models.db import database
 
 
 def main():
+    u = User(telegram_id=123)
+    u.save()
     pass
 
 
