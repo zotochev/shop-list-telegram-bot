@@ -1,0 +1,2 @@
+class BotInitException(Exception):
+    pass

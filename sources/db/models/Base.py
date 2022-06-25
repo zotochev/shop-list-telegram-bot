@@ -1,5 +1,5 @@
 import peewee
-from sources.models.db import database
+from sources.db.db import database
 
 
 __all__ = [

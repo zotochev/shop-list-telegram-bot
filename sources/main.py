@@ -1,15 +1,12 @@
-import peewee
-import aiogram
-from models.User import User
-from models.List import List
-from models.Item import Item
-from models.db import database
+from aiogram import executor
+
+from telegram_bot.bot_init import dp
+from telegram_bot.handlers import commands
 
 
 def main():
-    u = User(telegram_id=123)
-    u.save()
-    pass
+    commands.register_handlers_commands(dp)
+    executor.start_polling(dp, skip_updates=True)
 
 
 if __name__ == "__main__":
