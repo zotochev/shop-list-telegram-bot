@@ -28,6 +28,26 @@ async def send_start(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(commands=['help'])
 async def send_help(message: types.Message, state: FSMContext):
+    m = ("After sending /start command you was automatically "
+         "registered in the bot system.\n"
+         "\n"
+         "On the start you have default list with no records. "
+         "To add record send any text message to the bot.\n"
+         "\n"
+         "Supported commands:\n"
+         "/list - to see all records of the current list.\n"
+         "/list list_name or /_list_name - to create new list or create new one.\n"
+         "/lists - to see all your lists.\n"
+         "\n"
+         "Navigation:\n"
+         '/^, /a, /A, /up, /UP - to set previous record as current.\n'
+         '/v, /V, /d, /down, /DOWN - to set next record as current.\n'
+         "\n"
+         "Change record status:\n"
+         "/x, /X, /done - to set current record as done.\n"
+         "/del, /delete - to delete current record.\n"
+         "")
+
     await message.answer(message.text)
 
 
@@ -264,20 +284,20 @@ def is_change_current_record(message: types.Message) -> bool:
 
 
 def register_handlers_commands(dp: Dispatcher):
-    dp.register_message_handler(send_start, commands=['start'], state='*')
-    dp.register_message_handler(send_help, commands=['help'], state='*')
+    dp.register_message_handler(send_start, commands=['start'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(send_help, commands=['help'], state='*', content_types=types.ContentType.TEXT)
 
-    dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*')
-    dp.register_message_handler(change_list, is_registered, lambda m: len(m.text) > 5, commands=['list'], state='*')
-    dp.register_message_handler(change_list, is_registered, short_change_list, state='*')
-    dp.register_message_handler(send_lists, is_registered, commands=['lists'], state='*')
+    dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(change_list, is_registered, lambda m: len(m.text) > 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(change_list, is_registered, short_change_list, state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(send_lists, is_registered, commands=['lists'], state='*', content_types=types.ContentType.TEXT)
 
     dp.register_message_handler(change_current_record, is_registered, commands=[
         '^', 'a', 'A', 'up', 'UP',
         'v', 'V', 'd', 'down', 'DOWN'
-    ], state='*')
+    ], state='*', content_types=types.ContentType.TEXT)
 
-    dp.register_message_handler(done_record, is_registered, commands=['done', 'x', 'X'], state='*')
-    dp.register_message_handler(delete_record, is_registered, commands=['del', 'delete'], state='*')
+    dp.register_message_handler(done_record, is_registered, commands=['done', 'x', 'X'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(delete_record, is_registered, commands=['del', 'delete'], state='*', content_types=types.ContentType.TEXT)
 
-    dp.register_message_handler(add_record, is_registered, lambda m: m.text.isalnum(), state='*')
+    dp.register_message_handler(add_record, is_registered, lambda m: m.text.isalnum(), state='*', content_types=types.ContentType.TEXT)
