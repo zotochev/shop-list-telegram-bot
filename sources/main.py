@@ -11,7 +11,6 @@ WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
-# WEBAPP_HOST = 'localhost'
 WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = os.getenv('PORT')
 
@@ -27,8 +26,6 @@ def main():
                            host=WEBAPP_HOST,
                            port=WEBAPP_PORT
     )
-    # http://0.0.0.0:8080
-    # executor.start_polling(dp, skip_updates=True)
 
 
 if __name__ == "__main__":

@@ -208,17 +208,17 @@ async def done_record(message: types.Message, state: FSMContext):
     current_list = List.select().where(List.id == user.current_list_id).get()
     current_record_id = current_list.current_record.id if current_list.current_record else None
     records = Record.select().where((Record.list_id == current_list.id) & (Record.is_delete == False))
-    records_ids = [x.id for x in records]
+    # records_ids = [x.id for x in records]
 
-    if records_ids:
-        index = records_ids.index(current_record_id)
-        if index == len(records_ids) - 1:
-            direction = -1
-        else:
-            direction = 1
-        new_current_record_id = records_ids[(index + direction) % len(records_ids)]
-        query = List.update(current_record=new_current_record_id).where(List.id == current_list.id)
-        query.execute()
+    # if records_ids:
+    #     index = records_ids.index(current_record_id)
+    #     if index == len(records_ids) - 1:
+    #         direction = -1
+    #     else:
+    #         direction = 1
+    #     new_current_record_id = records_ids[(index + direction) % len(records_ids)]
+    #     query = List.update(current_record=new_current_record_id).where(List.id == current_list.id)
+    #     query.execute()
 
     if current_record_id:
         current_record = Record.select().where(Record.id == current_record_id).get()
