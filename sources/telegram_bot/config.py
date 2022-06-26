@@ -61,7 +61,8 @@ class Reactions:
         self.language_code = message.from_user.language_code
 
     def _get_reaction(self, reaction: str):
-        return prepare_for_md(REACTIONS.get(self.language_code, 'en').get(reaction, 'Unknown reaction.'))
+        language = self.language_code if REACTIONS.get(self.language_code) else 'en'
+        return prepare_for_md(REACTIONS[language].get(reaction, 'Unknown reaction.'))
 
     def start(self):
         return self._get_reaction('start')
