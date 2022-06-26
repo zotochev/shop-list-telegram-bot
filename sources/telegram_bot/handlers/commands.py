@@ -250,9 +250,9 @@ def short_change_list(message: types.Message) -> bool:
 
 
 def get_direction(m: str) -> int:
-    if m == '/^' or m == '/A' or m == '/a' or m == '/up':
+    if m == '/^' or m == '/A' or m == '/a' or m == '/up' or m == '/UP':
         return -1
-    elif m == '/v' or m == '/V' or m == '/d' or m == '/down':
+    elif m == '/v' or m == '/V' or m == '/d' or m == '/down' or m == '/DOWN':
         return 1
     else:
         return 0
