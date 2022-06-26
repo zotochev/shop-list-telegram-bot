@@ -10,3 +10,5 @@ __all__ = [
 class Base(peewee.Model):
     class Meta:
         database = database
+
+    created = peewee.TimestampField()
