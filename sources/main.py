@@ -3,6 +3,7 @@ from aiogram import executor
 
 from telegram_bot.bot_init import dp
 from telegram_bot.handlers import commands
+from telegram_bot.bot_init import on_startup, on_shutdown
 
 
 # webhook settings
@@ -17,6 +18,8 @@ def main():
                            dispatcher=dp,
                            webhook_path=WEBHOOK_PATH,
                            skip_updates=True,
+                           on_startup=on_startup,
+                           on_shutdown=on_shutdown
     )
     # executor.start_polling(dp, skip_updates=True)
 
