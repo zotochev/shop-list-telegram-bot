@@ -71,7 +71,7 @@ def get_list_by_name(telegram_id: int, list_name: str) -> typing.Optional[dict]:
     """
 
     user = User.select().where(User.telegram_id == telegram_id).get()
-    found_list = List.select().where(List.user_id == user.id & List.name == list_name)
+    found_list = List.select().where((List.user_id == user.id) & (List.name == list_name))
     result = None
 
     if found_list:
