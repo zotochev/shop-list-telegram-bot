@@ -23,8 +23,8 @@ def main():
                            skip_updates=True,
                            on_startup=on_startup,
                            on_shutdown=on_shutdown,
-                           host='localhost',
-                           port=8080
+                           host=WEBAPP_HOST,
+                           port=WEBAPP_PORT
     )
     # http://0.0.0.0:8080
     # executor.start_polling(dp, skip_updates=True)
