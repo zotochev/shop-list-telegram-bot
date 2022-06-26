@@ -13,6 +13,8 @@ TOKEN = os.environ.get('TELEGRAM_TOKEN')
 if not TOKEN:
     raise BotInitException('TOKEN_NOT_FOUND')
 
+ADMINS = os.getenv('ADMINS', None)
+
 
 def prepare_for_md(text: str) -> str:
     return text.replace('.', '\.').replace('-', '\-').replace('_', '\_')

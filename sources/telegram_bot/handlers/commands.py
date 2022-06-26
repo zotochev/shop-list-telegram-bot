@@ -7,7 +7,7 @@ from sources.db.models import User
 from sources.db.models import List
 from sources.db.models import Record
 
-from sources.telegram_bot.config import Reactions
+from sources.telegram_bot.config import Reactions, ADMINS
 
 
 # @dp.message_handler(commands=['start'])
@@ -253,6 +253,26 @@ async def delete_record(message: types.Message, state: FSMContext):
     await message.answer(answer, parse_mode='MarkdownV2')
 
 
+async def get_users(message: types.Message):
+    if ADMINS:
+        admins_id = []
+
+        admins = ADMINS.split()
+        for admin in admins:
+            try:
+                telegram_id = int(admin)
+                admins_id.append(telegram_id)
+            except Exception as e:
+                pass
+        if message.from_user.id in admins_id:
+            list_users = User.select()
+            if list_users:
+                answer = "\n".join([f"{x.telegram_id} - {x.language}" for x in list_users])
+                await message.answer(answer)
+            else:
+                await message.answer('No users.')
+
+
 def is_registered(message: types.Message) -> bool:
     return bool(User.select().where(User.telegram_id == message.from_user.id))
 
@@ -280,6 +300,7 @@ def is_change_current_record(message: types.Message) -> bool:
 def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(send_start, commands=['start'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_help, commands=['help'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(get_users, commands=['users'], state='*', content_types=types.ContentType.TEXT)
 
     dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(change_list, is_registered, lambda m: len(m.text) > 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
