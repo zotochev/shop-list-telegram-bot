@@ -48,7 +48,7 @@ async def send_help(message: types.Message, state: FSMContext):
          "/del, /delete - to delete current record.\n"
          "")
 
-    await message.answer(message.text)
+    await message.answer(m)
 
 
 def get_current_list(telegram_id: int) -> dict:
