@@ -3,8 +3,11 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import os
 
 from sources.telegram_bot.bot_exceptions import BotInitException
-from sources.main import WEBHOOK_URL
 
+
+WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
+WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
 if not TOKEN:
