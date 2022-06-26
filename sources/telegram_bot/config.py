@@ -6,9 +6,15 @@ from sources.telegram_bot.bot_exceptions import BotInitException
 
 WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
+if not WEBHOOK_HOST or not WEBHOOK_PATH:
+    raise BotInitException(f'WEBAPP HOST: {WEBHOOK_HOST}, PORT: {WEBHOOK_PATH}')
+
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = os.getenv('PORT')
+if not WEBAPP_HOST or not WEBAPP_PORT:
+    raise BotInitException(f'WEBAPP HOST: {WEBAPP_HOST}, PORT: {WEBAPP_PORT}')
+
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
 if not TOKEN:
     raise BotInitException('TOKEN_NOT_FOUND')
