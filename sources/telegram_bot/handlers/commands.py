@@ -23,32 +23,34 @@ async def send_start(message: types.Message, state: FSMContext):
         query.execute()
         await message.answer("You successfully registered!")
 
-    await message.answer("Hello!")
+    await message.answer(("Hello\! I am the *Shop List* bot\. You can create and manage simple "
+                          "lists of any purpose with me\. Send /help for more information\."),
+                         parse_mode='MarkdownV2')
 
 
 # @dp.message_handler(commands=['help'])
 async def send_help(message: types.Message, state: FSMContext):
-    m = ("After sending /start command you was automatically "
+    m = ("After sending /start command you automatically "
          "registered in the bot system.\n"
          "\n"
-         "On the start you have default list with no records. "
-         "To add record send any text message to the bot.\n"
+         "On the start you have the default list with no records. "
+         "To add a record send any text message to the bot.\n"
          "\n"
-         "Supported commands:\n"
+         "*Supported commands*:\n"
          "/list - to see all records of the current list.\n"
          "/list list_name or /_list_name - to create new list or create new one.\n"
          "/lists - to see all your lists.\n"
          "\n"
-         "Navigation:\n"
+         "*Navigation*:\n"
          '/^, /a, /A, /up, /UP - to set previous record as current.\n'
          '/v, /V, /d, /down, /DOWN - to set next record as current.\n'
          "\n"
-         "Change record status:\n"
+         "*Change record status*:\n"
          "/x, /X, /done - to set current record as done.\n"
          "/del, /delete - to delete current record.\n"
          "")
 
-    await message.answer(m)
+    await message.answer(m.replace('.', '\.').replace('-', '\-').replace('_', '\_'), parse_mode='MarkdownV2')
 
 
 def get_current_list(telegram_id: int) -> dict:
