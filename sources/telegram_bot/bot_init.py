@@ -1,17 +1,7 @@
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import os
+# from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from sources.telegram_bot.bot_exceptions import BotInitException
-
-
-WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-
-TOKEN = os.environ.get('TELEGRAM_TOKEN')
-if not TOKEN:
-    raise BotInitException('TOKEN_NOT_FOUND')
+from config import WEBHOOK_URL, TOKEN
 
 
 async def on_startup(dp):
@@ -21,14 +11,14 @@ async def on_startup(dp):
 
 async def on_shutdown(dp):
     # Remove webhook (not acceptable in some cases)
-    await bot.delete_webhook()
+    # await bot.delete_webhook()
 
     # Close DB connection (if used)
-    await dp.storage.close()
-    await dp.storage.wait_closed()
-
+    # await dp.storage.close()
+    # await dp.storage.wait_closed()
+    pass
 
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
-storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
+# storage = MemoryStorage()
+dp = Dispatcher(bot)

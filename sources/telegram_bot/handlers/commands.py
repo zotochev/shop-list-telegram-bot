@@ -7,6 +7,8 @@ from sources.db.models import User
 from sources.db.models import List
 from sources.db.models import Record
 
+from sources.telegram_bot.config import Reactions
+
 
 # @dp.message_handler(commands=['start'])
 async def send_start(message: types.Message, state: FSMContext):
@@ -21,36 +23,14 @@ async def send_start(message: types.Message, state: FSMContext):
 
         query = User.update(current_list_id=new_list.id).where(User.id == new_user.id)
         query.execute()
-        await message.answer("You successfully registered!")
+        await message.answer(Reactions(message).registered(), parse_mode='MarkdownV2')
 
-    await message.answer(("Hello\! I am the *Shop List* bot\. You can create and manage simple "
-                          "lists of any purpose with me\. Send /help for more information\."),
-                         parse_mode='MarkdownV2')
+    await message.answer(Reactions(message).start(), parse_mode='MarkdownV2')
 
 
 # @dp.message_handler(commands=['help'])
 async def send_help(message: types.Message, state: FSMContext):
-    m = ("After sending /start command you automatically "
-         "registered in the bot system.\n"
-         "\n"
-         "On the start you have the default list with no records. "
-         "To add a record send any text message to the bot.\n"
-         "\n"
-         "*Supported commands*:\n"
-         "/list - to see all records of the current list.\n"
-         "/list list_name or /_list_name - to change current list or create new one.\n"
-         "/lists - to see all your lists.\n"
-         "\n"
-         "*Navigation*:\n"
-         '/^, /a, /A, /up, /UP - to set previous record as current.\n'
-         '/v, /V, /d, /down, /DOWN - to set next record as current.\n'
-         "\n"
-         "*Change record status*:\n"
-         "/x, /X, /done - to set current record as done.\n"
-         "/del, /delete - to delete current record.\n"
-         "")
-
-    await message.answer(m.replace('.', '\.').replace('-', '\-').replace('_', '\_'), parse_mode='MarkdownV2')
+    await message.answer(Reactions(message).help(), parse_mode='MarkdownV2')
 
 
 def get_current_list(telegram_id: int) -> dict:
@@ -106,11 +86,11 @@ def get_list_by_name(telegram_id: int, list_name: str) -> typing.Optional[dict]:
     return result
 
 
-def prepare_list_to_send(records: dict) -> str:
+def prepare_list_to_send(records: dict) -> typing.Optional[str]:
     current_record_id = records['current_record_id']
 
     if not records['records']:
-        return 'You have no records\.'
+        return None
     else:
         result = []
         for i, x in enumerate(records['records']):
@@ -129,6 +109,8 @@ async def send_list(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     records = get_current_list(telegram_id=telegram_id)
     answer = prepare_list_to_send(records)
+    if not answer:
+        answer = Reactions(message).no_records()
     await message.answer(answer, parse_mode='MarkdownV2')
 
 
@@ -155,11 +137,13 @@ async def change_list(message: types.Message, state: FSMContext):
         new_list.save()
         query = User.update(current_list_id=new_list.id).where(User.id == user.id)
         query.execute()
-        await message.answer(f"{new_list_name} created\.", parse_mode='MarkdownV2')
+        await message.answer(Reactions(message).new_list(new_list_name), parse_mode='MarkdownV2')
     else:
         query = User.update(current_list_id=records['list_id']).where(User.id == user.id)
         query.execute()
         answer = prepare_list_to_send(records)
+        if not answer:
+            answer = Reactions(message).no_records()
         await message.answer(answer, parse_mode='MarkdownV2')
 
 
@@ -174,6 +158,8 @@ async def add_record(message: types.Message, state: FSMContext):
 
     records = get_current_list(telegram_id=message.from_user.id)
     answer = prepare_list_to_send(records)
+    if not answer:
+        answer = Reactions(message).no_records()
     await message.delete()
     await message.answer(answer, parse_mode='MarkdownV2')
 
@@ -198,6 +184,8 @@ async def change_current_record(message: types.Message, state: FSMContext):
 
         records = get_current_list(telegram_id=message.from_user.id)
         answer = prepare_list_to_send(records)
+        if not answer:
+            answer = Reactions(message).no_records()
         # await message.delete()
         await message.answer(answer, parse_mode='MarkdownV2')
 
@@ -228,6 +216,8 @@ async def done_record(message: types.Message, state: FSMContext):
 
     records = get_current_list(telegram_id=message.from_user.id)
     answer = prepare_list_to_send(records)
+    if not answer:
+        answer = Reactions(message).no_records()
     # await message.delete()
     await message.answer(answer, parse_mode='MarkdownV2')
 
@@ -257,6 +247,8 @@ async def delete_record(message: types.Message, state: FSMContext):
 
     records = get_current_list(telegram_id=message.from_user.id)
     answer = prepare_list_to_send(records)
+    if not answer:
+        answer = Reactions(message).no_records()
     # await message.delete()
     await message.answer(answer, parse_mode='MarkdownV2')
 
