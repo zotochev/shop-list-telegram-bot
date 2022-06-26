@@ -23,7 +23,7 @@ ADMINS = os.getenv('ADMINS', None)
 
 
 def prepare_for_md(text: str) -> str:
-    return text.replace('.', '\.').replace('-', '\-').replace('_', '\_')
+    return text.replace('.', '\.').replace('-', '\-').replace('_', '\_').replace('!', '\!')
 
 
 REACTIONS = {
