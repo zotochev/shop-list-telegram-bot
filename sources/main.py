@@ -3,14 +3,14 @@ from aiogram import executor
 from telegram_bot.bot_init import dp
 from telegram_bot.handlers import commands
 from telegram_bot.bot_init import on_startup, on_shutdown
-from telegram_bot.config import WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
+from telegram_bot.config import WEBHOOK_URL, WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT
 
 
 def main():
     commands.register_handlers_commands(dp)
     executor.start_webhook(
                            dispatcher=dp,
-                           webhook_path=WEBHOOK_URL,
+                           webhook_path=WEBHOOK_PATH,
                            skip_updates=True,
                            on_startup=on_startup,
                            on_shutdown=on_shutdown,
