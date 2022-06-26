@@ -38,7 +38,7 @@ async def send_help(message: types.Message, state: FSMContext):
          "\n"
          "*Supported commands*:\n"
          "/list - to see all records of the current list.\n"
-         "/list list_name or /_list_name - to create new list or create new one.\n"
+         "/list list_name or /_list_name - to change current list or create new one.\n"
          "/lists - to see all your lists.\n"
          "\n"
          "*Navigation*:\n"
