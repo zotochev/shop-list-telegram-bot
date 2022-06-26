@@ -19,8 +19,11 @@ def main():
                            webhook_path=WEBHOOK_PATH,
                            skip_updates=True,
                            on_startup=on_startup,
-                           on_shutdown=on_shutdown
+                           on_shutdown=on_shutdown,
+                           host='localhost',
+                           port=8080
     )
+    # http://0.0.0.0:8080
     # executor.start_polling(dp, skip_updates=True)
 
 
