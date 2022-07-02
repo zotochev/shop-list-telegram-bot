@@ -1,7 +1,7 @@
 import os
 from aiogram import types, Dispatcher
 
-from sources.telegram_bot.bot_exceptions import BotInitException
+from telegram_bot.bot_exceptions import BotInitException
 
 
 WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
@@ -10,8 +10,9 @@ if WEBHOOK_HOST is None or WEBHOOK_PATH is None:
     raise BotInitException(f'WEBAPP HOST: {WEBHOOK_HOST}, PATH: {WEBHOOK_PATH}')
 
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = os.getenv('PORT')
+
+WEBAPP_HOST = os.getenv('WEBAPP_HOST')
+WEBAPP_PORT = os.getenv('WEBAPP_PORT')
 if WEBAPP_HOST is None or WEBAPP_PORT is None:
     raise BotInitException(f'WEBAPP HOST: {WEBAPP_HOST}, PORT: {WEBAPP_PORT}')
 

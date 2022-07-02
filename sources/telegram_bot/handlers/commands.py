@@ -3,11 +3,11 @@ import typing
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
-from sources.db.models import User
-from sources.db.models import List
-from sources.db.models import Record
+from db.models import User
+from db.models import List
+from db.models import Record
 
-from sources.telegram_bot.config import Reactions, ADMINS
+from telegram_bot.config import Reactions, ADMINS, prepare_for_md
 
 
 # @dp.message_handler(commands=['start'])
@@ -94,15 +94,16 @@ def prepare_list_to_send(records: dict) -> typing.Optional[str]:
     else:
         result = []
         for i, x in enumerate(records['records']):
-            record_temp = x.data
+            record_temp = prepare_for_md(x.data)
             if x.id == current_record_id:
-                record_temp = f"__{record_temp}__"
+                record_temp = f"_{record_temp}_"
             if x.is_done:
                 record_temp = f"~{record_temp}~"
             if not x.is_delete:
                 result.append(f"{i + 1: 2}\. {record_temp}")
 
-        return f"*{records['name']}*:\n" + "\n".join(result)
+        to_send =  f"*{records['name']}*:\n" + "\n".join(result)
+        return to_send
 
 
 async def send_list(message: types.Message, state: FSMContext):
@@ -120,7 +121,7 @@ async def send_lists(message: types.Message, state: FSMContext):
     current_list_id = user.current_list_id.id if user.current_list_id else -1
     lists = List.select().where(List.user_id == user.id)
 
-    answer = "\n".join([f"/\_{x.name}" if x.id != current_list_id else f"/\___{x.name}__"
+    answer = "\n".join([f"/\_{prepare_for_md(x.name)}" if x.id != current_list_id else f"/\___{prepare_for_md(x.name)}__"
                         for x in lists])
     await message.answer(answer, parse_mode='MarkdownV2')
 

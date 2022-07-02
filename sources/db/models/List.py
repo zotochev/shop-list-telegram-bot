@@ -1,7 +1,7 @@
 import peewee
-from sources.db.models.Base import Base
-from sources.db.models.Record import Record
-from sources.db.db import database, create_tables
+from db.models.Base import Base
+from db.models.Record import Record
+from db.db import database, create_tables
 
 
 __all__ = [

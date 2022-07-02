@@ -1,4 +1,5 @@
 import peewee
+from pathlib import Path
 
 
 __all__ = [
@@ -6,7 +7,7 @@ __all__ = [
 ]
 
 
-database = peewee.SqliteDatabase('shop-list.db')
+database = peewee.SqliteDatabase(Path(Path(__file__).parent, 'shop-list.db'))
 
 
 def create_tables(db: peewee.SqliteDatabase, tables: list[peewee.Model]):

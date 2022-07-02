@@ -1,7 +1,8 @@
 from aiogram import Bot, Dispatcher
 # from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from sources.telegram_bot.config import WEBHOOK_URL, TOKEN
+# from sources.telegram_bot.config import WEBHOOK_URL, TOKEN
+from telegram_bot.config import WEBHOOK_URL, TOKEN
 
 
 async def on_startup(dp):
