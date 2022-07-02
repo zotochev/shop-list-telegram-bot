@@ -317,4 +317,4 @@ def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(done_record, is_registered, commands=['done', 'x', 'X'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(delete_record, is_registered, commands=['del', 'delete'], state='*', content_types=types.ContentType.TEXT)
 
-    dp.register_message_handler(add_record, is_registered, lambda m: m.text.replace(' ', '').isalnum(), state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(add_record, is_registered, lambda m: True, state='*', content_types=types.ContentType.TEXT)
