@@ -5,6 +5,7 @@ from aiogram import executor
 from dotenv import load_dotenv
 import logging
 
+
 load_dotenv()
 
 from telegram_bot.bot_init import dp
