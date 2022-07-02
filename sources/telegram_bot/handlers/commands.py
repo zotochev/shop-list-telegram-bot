@@ -119,7 +119,7 @@ async def send_lists(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     user = User.select().where(User.telegram_id == telegram_id).get()
     current_list_id = user.current_list_id.id if user.current_list_id else -1
-    lists = List.select().where(List.user_id == user.id)
+    lists = List.select().where((List.user_id == user.id) & (List.is_deleted == False))
 
     answer = "\n".join([f"/\_{prepare_for_md(x.name)}" if x.id != current_list_id else f"/\___{prepare_for_md(x.name)}__"
                         for x in lists])
