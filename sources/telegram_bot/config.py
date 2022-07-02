@@ -36,7 +36,7 @@ REACTIONS = {
                  "To add a record send any text message to the bot.\n"
                  "\n"
                  "*Supported commands*:\n"
-                 "/list - to see all records of the current list.\n"
+                 "/list or just / - to see all records of the current list.\n"
                  "/list list_name or /_list_name - to change current list or create new one.\n"
                  "/lists - to see all your lists.\n"
                  "\n"
