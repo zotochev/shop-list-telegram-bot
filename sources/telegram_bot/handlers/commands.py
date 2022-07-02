@@ -96,7 +96,7 @@ def prepare_list_to_send(records: dict) -> typing.Optional[str]:
         for i, x in enumerate(records['records']):
             record_temp = prepare_for_md(x.data)
             if x.id == current_record_id:
-                record_temp = f"_{record_temp}_"
+                record_temp = f"__{record_temp}__"
             if x.is_done:
                 record_temp = f"~{record_temp}~"
             if not x.is_delete:
@@ -316,4 +316,4 @@ def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(done_record, is_registered, commands=['done', 'x', 'X'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(delete_record, is_registered, commands=['del', 'delete'], state='*', content_types=types.ContentType.TEXT)
 
-    dp.register_message_handler(add_record, is_registered, lambda m: m.text.isalnum(), state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(add_record, is_registered, lambda m: m.text.replace(' ', '').isalnum(), state='*', content_types=types.ContentType.TEXT)
