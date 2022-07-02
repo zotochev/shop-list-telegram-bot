@@ -304,6 +304,7 @@ def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(get_users, commands=['users'], state='*', content_types=types.ContentType.TEXT)
 
     dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(send_list, is_registered, lambda m: m.text == '/', state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(change_list, is_registered, lambda m: len(m.text) > 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(change_list, is_registered, short_change_list, state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_lists, is_registered, commands=['lists'], state='*', content_types=types.ContentType.TEXT)
