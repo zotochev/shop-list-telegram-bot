@@ -102,7 +102,7 @@ def prepare_list_to_send(records: dict) -> typing.Optional[str]:
             if not x.is_delete:
                 result.append(f"{i + 1: 2}\. {record_temp}")
 
-        to_send =  f"*{records['name']}*:\n" + "\n".join(result)
+        to_send =  f"*{prepare_for_md(records['name'])}*:\n" + "\n".join(result)
         return to_send
 
 
