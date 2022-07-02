@@ -24,7 +24,8 @@ ADMINS = os.getenv('ADMINS', None)
 
 
 def prepare_for_md(text: str) -> str:
-    return text.replace('.', '\.').replace('-', '\-').replace('_', '\_').replace('!', '\!')
+    for c in "_*[]()~`>#+-=|{}.!":
+        return text.replace(c, f'{chr(47)}{c}')
 
 
 REACTIONS = {
