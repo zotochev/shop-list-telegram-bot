@@ -32,29 +32,29 @@ def prepare_for_md(text: str) -> str:
 REACTIONS = {
     'en': {
         'help': ("After sending /start command you automatically "
-                 "registered in the bot system.\n"
+                 "registered in the bot system\.\n"
                  "\n"
                  "On the start you have the default list with no records. "
-                 "To add a record send any text message to the bot.\n"
+                 "To add a record send any text message to the bot\.\n"
                  "\n"
                  "*Supported commands*:\n"
-                 "/list or just / - to see all records of the current list.\n"
-                 "/list list_name or /_list_name - to change current list or create new one.\n"
-                 "/lists - to see all your lists.\n"
+                 "/list or just / \- to see all records of the current list\.\n"
+                 "/list list_name or /\_list\_name \- to change current list or create new one\.\n"
+                 "/lists \- to see all your lists\.\n"
                  "\n"
                  "*Navigation*:\n"
-                 '/^, /a, /A, /up, /UP - to set previous record as current.\n'
-                 '/v, /V, /d, /down, /DOWN - to set next record as current.\n'
+                 '/^, /a, /A, /up, /UP \- to set previous record as current\.\n'
+                 '/v, /V, /d, /down, /DOWN \- to set next record as current\.\n'
                  "\n"
                  "*Change record status*:\n"
-                 "/x, /X, /done - to set current record as done.\n"
-                 "/del, /delete - to delete current record.\n"
+                 "/x, /X, /done \- to set current record as done\.\n"
+                 "/del, /delete \- to delete current record\.\n"
                  ),
-        'start': ("Hello! I am the *Shop List* bot. You can create and manage simple "
-                  "lists of any purpose with me. Send /help for more information."),
-        'registered': 'You successfully registered!',
-        'new_list': '{} created.',
-        'no_records': 'List has no records.',
+        'start': ("Hello\! I am the *Shop List* bot\. You can create and manage simple "
+                  "lists of any purpose with me\. Send /help for more information\."),
+        'registered': 'You successfully registered\!',
+        'new_list': '{} created\.',
+        'no_records': 'List has no records\.',
     }
 }
 
