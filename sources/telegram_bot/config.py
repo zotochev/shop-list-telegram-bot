@@ -39,7 +39,7 @@ REACTIONS = {
                  "\n"
                  "*Supported commands*:\n"
                  "/list or just / \- to see all records of the current list\.\n"
-                 "/list list_name or /\_list\_name \- to change current list or create new one\.\n"
+                 "/list list\_name or /\_list\_name \- to change current list or create new one\.\n"
                  "/lists \- to see all your lists\.\n"
                  "\n"
                  "*Navigation*:\n"
