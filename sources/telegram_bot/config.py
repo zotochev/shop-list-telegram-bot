@@ -53,7 +53,7 @@ REACTIONS = {
         'start': ("Hello\! I am the *Shop List* bot\. You can create and manage simple "
                   "lists of any purpose with me\. Send /help for more information\."),
         'registered': 'You successfully registered\!',
-        'new_list': '{} created\.',
+        'new_list': '*{}* created\.',
         'no_records': 'List has no records\.',
     }
 }
