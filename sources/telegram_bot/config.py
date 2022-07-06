@@ -54,7 +54,7 @@ REACTIONS = {
                   "lists of any purpose with me. Send /help for more information."),
         'registered': 'You successfully registered!',
         'new_list': '{} created.',
-        'no_records': 'You have no records.',
+        'no_records': 'List has no records.',
     }
 }
 
