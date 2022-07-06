@@ -34,7 +34,7 @@ REACTIONS = {
         'help': ("After sending /start command you automatically "
                  "registered in the bot system\.\n"
                  "\n"
-                 "On the start you have the default list with no records. "
+                 "On the start you have the default list with no records\. "
                  "To add a record send any text message to the bot\.\n"
                  "\n"
                  "*Supported commands*:\n"
