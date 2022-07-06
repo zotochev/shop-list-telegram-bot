@@ -25,7 +25,7 @@ async def send_start(message: types.Message, state: FSMContext):
         query.execute()
         await message.answer(Reactions(message).registered(), parse_mode='MarkdownV2')
 
-    await message.answer(Reactions(message).start(), parse_mode='MarkdownV2')
+    await message.answer(Reactions(message).start())
 
 
 # @dp.message_handler(commands=['help'])
