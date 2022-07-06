@@ -25,7 +25,7 @@ ADMINS = os.getenv('ADMINS', None)
 
 def prepare_for_md(text: str) -> str:
     for c in "_*[]()~`>#+-=|{}.!":
-        text = text.replace(c, f'{chr(47)}{c}')
+        text = text.replace(c, '\\' + c)
     return text
 
 
