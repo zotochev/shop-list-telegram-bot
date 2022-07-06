@@ -30,7 +30,7 @@ async def send_start(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(commands=['help'])
 async def send_help(message: types.Message, state: FSMContext):
-    await message.answer(Reactions(message).help(), parse_mode='MarkdownV2')
+    await message.answer(Reactions(message).help())
 
 
 def get_current_list(telegram_id: int) -> dict:
