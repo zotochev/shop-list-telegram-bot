@@ -47,6 +47,8 @@ REACTIONS = {
                  "/list or just / \- to see all records of the current list\.\n"
                  "/list list\_name or /\_list\_name \- to change current list or create new one\.\n"
                  "/lists \- to see all your lists\.\n"
+                 "/share @user\_name \- Share list with another user \(user should be registered in bot\)\.\n"
+                 "/shared\_with \- List of users current list is shared with\.\n"
                  "\n"
                  "*Navigation*:\n"
                  '/^, /a, /A, /up, /UP \- to set previous record as current\.\n'

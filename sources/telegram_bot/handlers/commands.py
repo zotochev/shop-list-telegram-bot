@@ -303,16 +303,20 @@ async def get_users(message: types.Message):
 
 
 async def add_user_to_shared_list(message: types.Message):
-    if not hasattr(add_user_to_shared_list, 'map_telegram_username_user_id'):
-        add_user_to_shared_list.map_telegram_username_user_id = {}
-    map_updated = False
-
     async def _update_map():
         all_users = User.select()
 
         for user in all_users:
             chat = await bot.get_chat(user.telegram_id)
             add_user_to_shared_list.map_telegram_username_user_id[chat.username] = {"user_id": user.id, "telegram_id": user.telegram_id}
+
+    if not hasattr(add_user_to_shared_list, 'map_telegram_username_user_id'):
+        add_user_to_shared_list.map_telegram_username_user_id = {}
+        await _update_map()
+        map_updated = True
+    else:
+        map_updated = False
+
 
     try:
         if message.entities:
@@ -322,6 +326,7 @@ async def add_user_to_shared_list(message: types.Message):
 
             if mentions:
                 usernames = []
+                added_users = []
 
                 telegram_id = message.from_user.id
                 user = User.select().where(User.telegram_id == telegram_id).get()
@@ -350,14 +355,58 @@ async def add_user_to_shared_list(message: types.Message):
                                                         user_id=user_id,
                                                         )
                         new_user_list.save()
+                        added_users.append(username)
                         await bot.send_message(telegram_id, f"You have been added to shared list: {current_list.name}")
 
-                await message.answer("Users " + ", ".join(usernames) + f" added for shared usage for list `{current_list.name}`.")
+                if added_users:
+                    await message.answer(f"List `{current_list.name}` now share with " + ", ".join(added_users))
+                else:
+                    await message.answer("No new users found to add (user should be registred in the bot system).")
                 return
         await message.answer("User mentions not found.")
     except Exception as e:
         await message.answer(f"{e.__class__.__name__}: {e}")
 
+
+async def shared_with_list(message: types.Message):
+
+    try:
+        async def _update_map():
+            all_users = User.select()
+
+            for user in all_users:
+                chat = await bot.get_chat(user.telegram_id)
+                add_user_to_shared_list.map_telegram_username_user_id[chat.username] = {"user_id": user.id, "telegram_id": user.telegram_id}
+
+        if not hasattr(add_user_to_shared_list, 'map_telegram_username_user_id'):
+            add_user_to_shared_list.map_telegram_username_user_id = {}
+            await _update_map()
+            map_updated = True
+        else:
+            map_updated = False
+
+        telegram_id = message.from_user.id
+        user = User.select().where(User.telegram_id == telegram_id).get()
+        current_list = List.select().where(List.id == user.current_list_id).get()
+        user_list_list = UserList.select().where((UserList.list_id == current_list.id) & (UserList.user_id != user.id))
+        users_ids = [x.user_id for x in user_list_list]
+
+        result = []
+
+        for username, user_id_telegram_id in add_user_to_shared_list.map_telegram_username_user_id.items():
+            if user_id_telegram_id["user_id"] in users_ids:
+                result.append(username)
+
+        if result:
+            await message.answer("List shared with: " + ", ".join(result))
+        else:
+            await message.answer("Not a shared list.")
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}")
+        tb = e.__traceback__
+        while tb:
+            print(f"{tb.tb_frame}")
+            tb = tb.tb_next
 
 
 def is_registered(message: types.Message) -> bool:
@@ -388,7 +437,8 @@ def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(send_start, commands=['start'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_help, commands=['help'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(get_users, commands=['users'], state='*', content_types=types.ContentType.TEXT)
-    dp.register_message_handler(add_user_to_shared_list, commands=['add'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(add_user_to_shared_list, commands=['share'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(shared_with_list, commands=['shared_with'], state='*', content_types=types.ContentType.TEXT)
 
     dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_list, is_registered, lambda m: m.text == '/', state='*', content_types=types.ContentType.TEXT)
