@@ -24,8 +24,14 @@ ADMINS = os.getenv('ADMINS', None)
 
 
 def prepare_for_md(text: str) -> str:
+    assert isinstance(text, str), f"Text can be only string but `{type(text)}` given"
+
     for c in "_*[]()~`>#+-=|{}.!":
-        text = text.replace(c, '\\' + c)
+        try:
+            text = text.replace(c, '\\' + c)
+        except Exception as e:
+            print(f"{type(e)}: {e}")
+            print(f"Character: `{c}` in Text: ", text)
     return text
 
 
@@ -82,4 +88,4 @@ class Reactions:
         return self._get_reaction('no_records')
 
     def new_list(self, list_name: str):
-        return self._get_reaction('new_list').format(list_name)
+        return self._get_reaction('new_list').format(prepare_for_md(list_name))

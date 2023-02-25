@@ -5,9 +5,11 @@ from aiogram.dispatcher import FSMContext
 
 from db.models import User
 from db.models import List
+from db.models import UserList
 from db.models import Record
 
 from telegram_bot.config import Reactions, ADMINS, prepare_for_md
+from telegram_bot.bot_init import bot
 
 
 # @dp.message_handler(commands=['start'])
@@ -20,6 +22,10 @@ async def send_start(message: types.Message, state: FSMContext):
         new_list = List.create(name='default',
                                user_id=new_user.id)
         new_list.save()
+        new_user_list = UserList.create(list_id=new_list.id,
+                                        user_id=new_user.id,
+                                        )
+        new_user_list.save()
 
         query = User.update(current_list_id=new_list.id).where(User.id == new_user.id)
         query.execute()
@@ -72,8 +78,17 @@ def get_list_by_name(telegram_id: int, list_name: str) -> typing.Optional[dict]:
         }
     """
 
-    user = User.select().where(User.telegram_id == telegram_id).get()
-    found_list = List.select().where((List.user_id == user.id) & (List.name == list_name))
+    try:
+        user = User.select().where(User.telegram_id == telegram_id).get()
+        # found_list = List.select().where((List.user_id == user.id) & (List.name == list_name))
+        found_lists = UserList.select().where((UserList.user_id == user.id))
+        found_lists_id = [x.list_id for x in found_lists]
+
+        found_list = List.select().where((List.id << found_lists_id) & (List.name == list_name))
+    except Exception as e:
+        print(f'{e.__class__.__name__}: {e}')
+        return
+
     result = None
 
     if found_list:
@@ -119,7 +134,11 @@ async def send_lists(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     user = User.select().where(User.telegram_id == telegram_id).get()
     current_list_id = user.current_list_id.id if user.current_list_id else -1
-    lists = List.select().where((List.user_id == user.id) & (List.is_deleted == False))
+
+    user_lists = UserList.select().where((UserList.user_id == user.id))
+    lists_ids = [x.list_id for x in user_lists]
+
+    lists = List.select().where(List.id << lists_ids)
 
     answer = "\n".join([f"/\_{prepare_for_md(x.name)}" if x.id != current_list_id else f"/\___{prepare_for_md(x.name)}__"
                         for x in lists])
@@ -127,42 +146,62 @@ async def send_lists(message: types.Message, state: FSMContext):
 
 
 async def change_list(message: types.Message, state: FSMContext):
-    telegram_id = message.from_user.id
-    user = User.select().where(User.telegram_id == telegram_id).get()
-    new_list_name = message.text[6:] if message.text.startswith('/list') else message.text[2:]
-    records = get_list_by_name(telegram_id, new_list_name)
+    try:
+        telegram_id = message.from_user.id
+        user = User.select().where(User.telegram_id == telegram_id).get()
+        new_list_name = message.text[6:] if message.text.startswith('/list') else message.text[2:]
+        records = get_list_by_name(telegram_id, new_list_name)
 
-    if not records:
-        new_list = List.create(name=new_list_name,
-                               user_id=user.id)
-        new_list.save()
-        query = User.update(current_list_id=new_list.id).where(User.id == user.id)
-        query.execute()
-        await message.answer(Reactions(message).new_list(new_list_name), parse_mode='MarkdownV2')
-    else:
-        query = User.update(current_list_id=records['list_id']).where(User.id == user.id)
-        query.execute()
-        answer = prepare_list_to_send(records)
-        if not answer:
-            answer = Reactions(message).no_records()
-        await message.answer(answer, parse_mode='MarkdownV2')
+        if not records:
+            new_list = List.create(name=new_list_name,
+                                   user_id=user.id)
+            new_list.save()
+            query = User.update(current_list_id=new_list.id).where(User.id == user.id)
+            query.execute()
+
+            try:
+                new_user_list = UserList.create(list_id=new_list.id,
+                                                user_id=user.id,
+                                                )
+                new_user_list.save()
+            except Exception as e:
+                print(f"{e.__class__.__name__}: {e}")
+
+            await message.answer(Reactions(message).new_list(new_list_name), parse_mode='MarkdownV2')
+        else:
+            query = User.update(current_list_id=records['list_id']).where(User.id == user.id)
+            query.execute()
+            answer = prepare_list_to_send(records)
+            if not answer:
+                answer = Reactions(message).no_records()
+            await message.answer(answer, parse_mode='MarkdownV2')
+    except Exception as f:
+            print(f"{f.__class__.__name__}: {f}")
+
 
 
 async def add_record(message: types.Message, state: FSMContext):
-    user = User.select().where(User.telegram_id == message.from_user.id).get()
-    current_list = List.select().where(List.id == user.current_list_id).get()
-    record = Record.create(list_id=current_list.id, data=message.text)
-    record.save()
+    try:
+        user = User.select().where(User.telegram_id == message.from_user.id).get()
+        current_list = List.select().where(List.id == user.current_list_id).get()
+        record = Record.create(list_id=current_list.id, data=message.text)
+        record.save()
 
-    query = List.update(current_record=record.id).where(List.id == current_list.id)
-    query.execute()
+        query = List.update(current_record=record.id).where(List.id == current_list.id)
+        query.execute()
 
-    records = get_current_list(telegram_id=message.from_user.id)
-    answer = prepare_list_to_send(records)
-    if not answer:
-        answer = Reactions(message).no_records()
-    await message.delete()
-    await message.answer(answer, parse_mode='MarkdownV2')
+        records = get_current_list(telegram_id=message.from_user.id)
+        answer = prepare_list_to_send(records)
+        if not answer:
+            answer = Reactions(message).no_records()
+        await message.delete()
+        await message.answer(answer, parse_mode='MarkdownV2')
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}")
+        tb = e.__traceback__
+        while tb.tb_next:
+            print(f"{tb.tb_frame}")
+            tb = tb.tb_next
 
 
 async def change_current_record(message: types.Message, state: FSMContext):
@@ -197,17 +236,6 @@ async def done_record(message: types.Message, state: FSMContext):
     current_list = List.select().where(List.id == user.current_list_id).get()
     current_record_id = current_list.current_record.id if current_list.current_record else None
     records = Record.select().where((Record.list_id == current_list.id) & (Record.is_delete == False))
-    # records_ids = [x.id for x in records]
-
-    # if records_ids:
-    #     index = records_ids.index(current_record_id)
-    #     if index == len(records_ids) - 1:
-    #         direction = -1
-    #     else:
-    #         direction = 1
-    #     new_current_record_id = records_ids[(index + direction) % len(records_ids)]
-    #     query = List.update(current_record=new_current_record_id).where(List.id == current_list.id)
-    #     query.execute()
 
     if current_record_id:
         current_record = Record.select().where(Record.id == current_record_id).get()
@@ -274,6 +302,64 @@ async def get_users(message: types.Message):
                 await message.answer('No users.')
 
 
+async def add_user_to_shared_list(message: types.Message):
+    if not hasattr(add_user_to_shared_list, 'map_telegram_username_user_id'):
+        add_user_to_shared_list.map_telegram_username_user_id = {}
+    map_updated = False
+
+    async def _update_map():
+        all_users = User.select()
+
+        for user in all_users:
+            chat = await bot.get_chat(user.telegram_id)
+            add_user_to_shared_list.map_telegram_username_user_id[chat.username] = {"user_id": user.id, "telegram_id": user.telegram_id}
+
+    try:
+        if message.entities:
+            mentions = [x for x in message.entities if x.type == "mention"]
+            chats_ids = []
+            users_not_found = []
+
+            if mentions:
+                usernames = []
+
+                telegram_id = message.from_user.id
+                user = User.select().where(User.telegram_id == telegram_id).get()
+                current_list = List.select().where(List.id == user.current_list_id).get()
+                user_list_list = UserList.select().where(UserList.list_id == current_list.id)
+
+                for mention in mentions:
+                    username = message.text[mention.offset:mention.offset + mention.length].lstrip("@")
+
+                    if username not in add_user_to_shared_list.map_telegram_username_user_id:
+                        if not map_updated:
+                            await _update_map()
+                            map_updated = True
+                        else:
+                            users_not_found.append(username)
+
+                    if username in add_user_to_shared_list.map_telegram_username_user_id:
+                        usernames.append(username)
+
+                for username in usernames:
+                    # create user_list entry for every mentioned user
+                    user_id = add_user_to_shared_list.map_telegram_username_user_id[username]["user_id"]
+                    telegram_id = add_user_to_shared_list.map_telegram_username_user_id[username]["telegram_id"]
+                    if not [x for x in user_list_list if x.user_id == user_id]:
+                        new_user_list = UserList.create(list_id=current_list.id,
+                                                        user_id=user_id,
+                                                        )
+                        new_user_list.save()
+                        await bot.send_message(telegram_id, f"You have been added to shared list: {current_list.name}")
+
+                await message.answer("Users " + ", ".join(usernames) + f" added for shared usage for list `{current_list.name}`.")
+                return
+        await message.answer("User mentions not found.")
+    except Exception as e:
+        await message.answer(f"{e.__class__.__name__}: {e}")
+
+
+
 def is_registered(message: types.Message) -> bool:
     return bool(User.select().where(User.telegram_id == message.from_user.id))
 
@@ -302,6 +388,7 @@ def register_handlers_commands(dp: Dispatcher):
     dp.register_message_handler(send_start, commands=['start'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_help, commands=['help'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(get_users, commands=['users'], state='*', content_types=types.ContentType.TEXT)
+    dp.register_message_handler(add_user_to_shared_list, commands=['add'], state='*', content_types=types.ContentType.TEXT)
 
     dp.register_message_handler(send_list, is_registered, lambda m: len(m.text) == 5, commands=['list'], state='*', content_types=types.ContentType.TEXT)
     dp.register_message_handler(send_list, is_registered, lambda m: m.text == '/', state='*', content_types=types.ContentType.TEXT)
